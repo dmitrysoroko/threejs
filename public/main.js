@@ -1,6 +1,7 @@
-const mapW = 10,
+const createMatrix = (w, h) => Array(h).fill(0).map(() => new Array(w).fill(0)),
+	mapW = 10,
 	mapH = 10,
-	map = Array(mapW).fill(Array(mapH).fill(0)),
+	map = createMatrix(mapW, mapH),
 	WIDTH = window.innerWidth,
 	HEIGHT = window.innerHeight,
 	ASPECT = WIDTH / HEIGHT,
@@ -9,10 +10,14 @@ const mapW = 10,
 	t = THREE,
 	scene = new t.Scene(),
 	cam =  new t.PerspectiveCamera(60, ASPECT, 1, 10000),
-	renderer = new t.WebGLRenderer();
+	renderer = new t.WebGLRenderer(),
+	stats = new Stats();
+
+document.body.appendChild(stats.dom);
+document.body.appendChild(renderer.domElement);
 
 const floorTexture = new t.TextureLoader().load( 'images/floor-1.jpg');
-const wallTexture1 = new t.TextureLoader().load( 'images/wall-1.jpg');
+const wallTexture1 = new t.TextureLoader().load( 'images/wall-3.jpg');
 const wallTexture2 = new t.TextureLoader().load( 'images/wall-2.jpg');
 const healthTexture = new t.TextureLoader().load( 'images/health.png');
 const units = mapW;
@@ -41,12 +46,36 @@ directionalLight2.position.set( -0.5, -1, -0.5 );
 cam.position.set( 400, 200, 0 );
 const controls = new t.OrbitControls(cam);
 controls.minDistance = 100;
-controls.maxDistance = 500;
+controls.maxDistance = 2000;
 
+controlItem = new t.TransformControls(cam, renderer.domElement);
+controlItem.addEventListener( 'dragging-changed', function ( event ) {
+	controls.enabled = ! event.value;
+} );
+controlItem.attach( healthcube );
+
+scene.add( controlItem );
 renderer.setSize(WIDTH, HEIGHT);
-document.body.appendChild(renderer.domElement);
 
-const setupScene = () => {
+setTimeout(() => {
+	map.forEach((row, i) => row.forEach((el, j) => map[i][j] = Math.floor(Math.random() * 3)));
+},1000);
+
+requestAnimationFrame(animate);
+
+function animate() {
+	let selectedObject;
+	while(selectedObject = scene.getObjectByName('wall'), selectedObject) {
+		scene.remove(selectedObject);
+	}
+	stats.update();
+	requestAnimationFrame(animate);
+	setupScene();
+	// renderer.clear();
+	renderer.render(scene, cam);
+}
+
+function setupScene() {
 	scene.add(floor);
 
 	for (var i = 0; i < mapW; i++) {
@@ -56,6 +85,7 @@ const setupScene = () => {
 				wall.position.x = (i - units/2) * UNITSIZE;
 				wall.position.y = WALLHEIGHT/2;
 				wall.position.z = (j - units/2) * UNITSIZE;
+				wall.name = 'wall';
 				scene.add(wall);
 			}
 		}
@@ -64,28 +94,9 @@ const setupScene = () => {
 	scene.add(healthcube);
 	scene.add( directionalLight1 );
 	scene.add( directionalLight2 );
-};
+}
 
-setupScene();
-
-setInterval(() => {
-	map.forEach(row => {
-		row.forEach(el => {
-			el = Math.floor(Math.random() * 2)
-		})
-	})
-},1000);
-
-
-
-const animate = () => {
-	requestAnimationFrame(animate);
-
-	renderer.clear();
-	renderer.render(scene, cam);
-};
-
-animate();
+// https://jsfiddle.net/yLfrrkfx/2/
 
 
 
