@@ -1,19 +1,23 @@
+import * as THREE from 'three';
+
+import './OrbitControls';
+import './TransformControls';
+import FormContainer from "./js/components/container/FormContainer.jsx";
+
 const createMatrix = (w, h) => Array(h).fill(0).map(() => new Array(w).fill(0)),
 	mapW = 10,
 	mapH = 10,
 	map = createMatrix(mapW, mapH),
-	WIDTH = window.innerWidth,
-	HEIGHT = window.innerHeight,
+	WIDTH = 1000,
+	HEIGHT = 600,
 	ASPECT = WIDTH / HEIGHT,
 	UNITSIZE = 250,
 	WALLHEIGHT = UNITSIZE / 3,
 	t = THREE,
 	scene = new t.Scene(),
 	cam =  new t.PerspectiveCamera(60, ASPECT, 1, 10000),
-	renderer = new t.WebGLRenderer(),
-	stats = new Stats();
+	renderer = new t.WebGLRenderer();
 
-document.body.appendChild(stats.dom);
 document.body.appendChild(renderer.domElement);
 
 const floorTexture = new t.TextureLoader().load( 'images/floor-1.jpg');
@@ -48,7 +52,7 @@ const controls = new t.OrbitControls(cam);
 controls.minDistance = 100;
 controls.maxDistance = 2000;
 
-controlItem = new t.TransformControls(cam, renderer.domElement);
+const controlItem = new t.TransformControls(cam, renderer.domElement);
 controlItem.addEventListener( 'dragging-changed', function ( event ) {
 	controls.enabled = ! event.value;
 } );
@@ -68,7 +72,7 @@ function animate() {
 	while(selectedObject = scene.getObjectByName('wall'), selectedObject) {
 		scene.remove(selectedObject);
 	}
-	stats.update();
+	// stats.update();
 	requestAnimationFrame(animate);
 	setupScene();
 	// renderer.clear();
