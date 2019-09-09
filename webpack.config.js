@@ -3,11 +3,20 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const WriteFilePlugin  = require('write-file-webpack-plugin');
 
 module.exports = {
     // mode: "production",
     mode: "development",
-    entry: './src/index.js',
+    entry: './src/index.jsx',
+    resolve: {
+        extensions: ['.js', '.jsx']
+    },
+    watch: true,
+    watchOptions: {
+        aggregateTimeout: 300,
+        poll: 1000
+    },
     module: {
         rules: [
             {
@@ -19,13 +28,19 @@ module.exports = {
                         presets: [ ['@babel/preset-env', { "modules": "commonjs", }], "@babel/preset-react" ]
                     }
                 }
-            }
+            },
+            {
+                test: /\.(png|svg|jpg|gif)$/,
+                use: [
+                    'file-loader'
+                ]
+            },
         ]
     },
     plugins: [
-        new CopyPlugin([
-            { from: 'assets/images', to: 'images' },
-        ]),
+        // new CopyPlugin([
+        //     { from: 'assets/images', to: 'images' },
+        // ]),
         new BundleAnalyzerPlugin(),
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
@@ -39,7 +54,8 @@ module.exports = {
                 removeStyleLinkTypeAttributes: true,
                 useShortDoctype: true
             }
-        })
+        }),
+        new WriteFilePlugin(),
     ],
     output: {
         filename: '[name].bundle.js',
