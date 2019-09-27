@@ -59,9 +59,7 @@ healthcube2.position.set(-UNITSIZE-15, 35, -UNITSIZE-15);
 directionalLight1.position.set(0.5, 1, 0.5);
 directionalLight2.position.set(-0.5, -1, -0.5);
 cam.position.set(400, 200, 0);
-const controls = new t.OrbitControls(cam);
-controls.minDistance = 100;
-controls.maxDistance = 2000;
+
 
 setTimeout(() => {
     map.forEach((row, i) => row.forEach((el, j) => map[i][j] = Math.floor(Math.random() * 3)));
@@ -122,6 +120,9 @@ const ThreeJs = memo(() => {
 
     useEffect(() => {
         const renderer = new t.WebGLRenderer({ canvas: canvas.current });
+        const controls = new t.OrbitControls(cam, canvas.current);
+        controls.minDistance = 100;
+        controls.maxDistance = 2000;
         const controlItem = new t.TransformControls(cam, canvas.current);
         controlItem.addEventListener( 'dragging-changed', function ( event ) {
             controls.enabled = ! event.value;
