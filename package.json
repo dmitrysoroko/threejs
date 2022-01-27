@@ -29,7 +29,7 @@
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "stats-js": "^1.0.1",
-    "three": "^0.108.0",
+    "three": "^0.137.0",
     "write-file-webpack-plugin": "^4.5.1"
   },
   "devDependencies": {
